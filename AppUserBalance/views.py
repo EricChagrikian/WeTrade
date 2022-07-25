@@ -7,8 +7,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView
+from rest_framework import viewsets, permissions
 from requests import request
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 
 from .serializers import (
     DepositForm,
@@ -18,31 +19,45 @@ from .models import Balance
 
 
 @api_view(['POST'])
-class DepositMoneyView(request):
+@permission_classes((permissions.AllowAny,))
+class BalanceViewSet(viewsets.ViewSet):
+
+    def deposit(self, request):
+        queryset = Balance.objects.all()
+        serializer = DepositForm(queryset)
+        return Response(serializer.data)
+
+    def withdrawal(self,request):
+        queryset = Balance.objects.all()
+        serializer = WithdrawForm(queryset)
+        return Response(serializer.data)
 
 
-    def form_valid(self, serializer):
-        amount = serializer.cleaned_data.get('amount')
-        account = self.request.user.account
 
-        if not account.deposit_date:
-            now = timezone.now()
-            account.deposit_date = now
+# class DepositMoneyView(ListView):
 
-        account.Balance.account_balance += amount
-        account.save(
-            update_fields=[
-                'deposit_date',
-                'balance'
-            ]
-        )
 
-        if request.method == 'POST':
-            serializer = DepositForm(data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        
+#     def form_valid(self, serializer):
+#         amount = serializer.cleaned_data.get('amount')
+#         account = self.request.user.account
+#         now = timezone.now()
+
+#         account.history = now
+
+#         account.Balance.account_balance += amount
+#         account.save(
+#             update_fields=[
+#                 'history',
+#                 'account_balance'
+#             ]
+#         )
+
+#         if request.method == 'POST':
+#             serializer = DepositForm(data=request.data)
+#             if serializer.is_valid():
+#                 serializer.save()
+#                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        
 
 
 
