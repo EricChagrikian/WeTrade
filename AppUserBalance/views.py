@@ -19,7 +19,6 @@ from .serializers import (
 from .models import Balance
 
 
-# @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 class BalanceViewSet(viewsets.ViewSet):
 
@@ -28,9 +27,9 @@ class BalanceViewSet(viewsets.ViewSet):
 
         serializer = DepositForm(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            queryset = Balance.objects.all()
-            serializer = DepositForm(queryset)
-            self.deposit.serializer.save()
+            queryset = serializer.objects.all()
+            queryset.is_valid()
+            queryset.save()
             return Response({'status': 'deposit set'})
         
     # @action(detail=True, methods=['post'])
