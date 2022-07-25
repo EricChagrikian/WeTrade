@@ -15,13 +15,14 @@ class DepositForm(serializers.ModelSerializer):
 
     class Meta:
         model = Balance
-        fields = [
-            'account_balance'
-        ]    
+        fields = (
+            'account_balance',
+        )
+        extra_kwargs = {'account_balance': {'required': True}}
 
-    def save(self, commit=True):
-        self.instance.account_balance = self.account_balance
-        return super().save()
+    # def save(self, commit=True):
+    #     self.instance.account_balance = self.account_balance
+    #     return super().save()
 
 
 class WithdrawForm(serializers.ModelSerializer):
