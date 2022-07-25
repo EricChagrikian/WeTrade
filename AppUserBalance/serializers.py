@@ -16,7 +16,7 @@ class DepositForm(serializers.ModelSerializer):
     class Meta:
         model = Balance
         fields = [
-            'amount'
+            'account_balance'
         ]    
 
     def save(self, commit=True):
@@ -29,7 +29,7 @@ class WithdrawForm(serializers.ModelSerializer):
     class Meta:
         model = Balance
         fields = [
-            'amount'
+            'account_balance'
         ]    
 
 

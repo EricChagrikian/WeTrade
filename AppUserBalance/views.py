@@ -9,7 +9,8 @@ from django.utils import timezone
 from django.views.generic import CreateView, ListView
 from rest_framework import viewsets, permissions
 from requests import request
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.response import Response
 
 from .serializers import (
     DepositForm,
@@ -18,10 +19,11 @@ from .serializers import (
 from .models import Balance
 
 
-@api_view(['POST'])
+# @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 class BalanceViewSet(viewsets.ViewSet):
 
+    @action(detail=True, methods=['post'])
     def deposit(self, request):
         queryset = Balance.objects.all()
         serializer = DepositForm(queryset)
@@ -31,6 +33,8 @@ class BalanceViewSet(viewsets.ViewSet):
         queryset = Balance.objects.all()
         serializer = WithdrawForm(queryset)
         return Response(serializer.data)
+    
+
 
 
 
