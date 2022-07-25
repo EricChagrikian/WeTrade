@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'AppRegister',
     'rest_framework',
     'rest_framework.authtoken',
+    'AppUserBalance',
 ]
 
 REST_FRAMEWORK = {
