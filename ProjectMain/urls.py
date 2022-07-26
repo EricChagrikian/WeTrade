@@ -20,6 +20,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 from AppRegister.views import MyObtainTokenPairView
 from rest_framework_simplejwt.views import TokenRefreshView
+from AppUserBalance import views
 
 
 urlpatterns = [
@@ -27,9 +28,11 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('register',RegisterUserAPIView.as_view()),
+    path('register/',RegisterUserAPIView.as_view()),
     path('login/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('balance/deposit/', views.BalanceViewSet.as_view({'post': 'deposit'})),
+    path('balance/withdraw/', views.BalanceViewSet.as_view({'post': 'withdraw'})),
 ]
 
 router = DefaultRouter()
