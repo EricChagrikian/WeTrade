@@ -17,10 +17,10 @@ def crawl_currency():
 
     rows = bs.find('tbody', class_= "table__body").find_all('tr', class_= "table__row")[0:10]
     for row in rows:
-        cryptocurrency = row.find('span', class_="profile__name").get_text().strip().replace('\n', '')
+        cryptocurrency = row.find('span', class_="profile__name").get_text().strip().replace('\n','')
         values = row.find_all('div', class_="valuta")
-        price = values[0].get_text().strip().replace('\n', '')
-        market_cap = values[1].get_text().strip().replace('\n', '')
+        price = values[0].get_text().strip().replace('\n','')
+        market_cap = values[1].get_text().strip().replace('\n','')
         #change = row.find('div', class_="change").find('span').get_text().strip().replace('\n', '')
         print({'cryptocurrency': cryptocurrency, 'price': price, 'market_cap': market_cap})
 

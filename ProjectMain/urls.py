@@ -21,6 +21,7 @@ from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshVie
 from AppRegister.views import MyObtainTokenPairView
 from rest_framework_simplejwt.views import TokenRefreshView
 from AppUserBalance import views
+from trackingAPI.views import ListCryptocurrencyView
 
 
 urlpatterns = [
@@ -31,7 +32,8 @@ urlpatterns = [
     path('register/',RegisterUserAPIView.as_view()),
     path('login/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('balance/deposit/', views.BalanceViewSet.as_view({'post': 'deposit'}))
+    path('balance/deposit/', views.BalanceViewSet.as_view({'post': 'deposit'})),
+    path('tracking/', ListCryptocurrencyView.as_view()),
 ]
 
 router = DefaultRouter()
