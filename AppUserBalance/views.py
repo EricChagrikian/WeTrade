@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView
+from yaml import serialize_all
 from rest_framework import viewsets, permissions
 from requests import request
 from rest_framework.decorators import api_view, permission_classes, action
@@ -30,7 +31,7 @@ class BalanceViewSet(viewsets.ViewSet):
         if serializer.is_valid(raise_exception=True):
             queryset = Balance.objects.all()
             serializer = DepositForm(queryset)
-            self.deposit.serializer.save()
+            
             return Response({'status': 'deposit set'})
         
     # @action(detail=True, methods=['post'])
@@ -42,10 +43,10 @@ class BalanceViewSet(viewsets.ViewSet):
     #     return Response(serializer.data)
         
 
-    def withdrawal(self,request):
-        queryset = Balance.objects.all()
-        serializer = WithdrawForm(queryset)
-        return Response(serializer.data)    
+    #def withdrawal(self,request):
+        #queryset = Balance.objects.all()
+        #serializer = WithdrawForm(queryset)
+        #return Response(serializer.data)    
     
 
 
