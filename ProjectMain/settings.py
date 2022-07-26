@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'AppUserBalance',
-    'trackingAPI',
 ]
 
 REST_FRAMEWORK = {
