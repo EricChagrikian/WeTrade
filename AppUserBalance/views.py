@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render
 
 # Create your views here.
@@ -27,10 +28,9 @@ class BalanceViewSet(viewsets.ViewSet):
 
         serializer = DepositForm(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            queryset = serializer.objects.all()
-            queryset.is_valid()
-            queryset.save()
-            return Response({'status': 'deposit set'})
+            serializer_instance = Balance.objects.create(account_balance=DepositForm, history = datetime.now)
+            serializer_instance.save()
+            return Response({'status': 'deposit set'}, serializer.data)
         
     # @action(detail=True, methods=['post'])
     # def deposit(self, request):
