@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 
 
 class Balance(models.Model):
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         User,
         related_name='account',
         on_delete=models.CASCADE,
