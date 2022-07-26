@@ -37,6 +37,21 @@ class BalanceViewSet(viewsets.ViewSet):
 
             serializer_instance.save()
             return Response({'status': 'deposit set'})
+
+    @action(detail=True, methods=['post'])
+    def withdraw(self, request):
+
+        serializer = WithdrawForm(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer_instance = Balance.objects.create(
+                user=request.user,
+                account_balance=request.data["account_balance"], 
+                history = datetime.now()
+                )
+
+
+            serializer_instance.save()
+            return Response({'status': 'deposit set'})
         
     # @action(detail=True, methods=['post'])
     # def deposit(self, request):
@@ -47,10 +62,6 @@ class BalanceViewSet(viewsets.ViewSet):
     #     return Response(serializer.data)
         
 
-    def withdrawal(self,request):
-        queryset = Balance.objects.all()
-        serializer = WithdrawForm(queryset)
-        return Response(serializer.data)    
     
 
 

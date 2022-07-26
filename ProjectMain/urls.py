@@ -31,7 +31,8 @@ urlpatterns = [
     path('register/',RegisterUserAPIView.as_view()),
     path('login/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('balance/deposit/', views.BalanceViewSet.as_view({'post': 'deposit'}))
+    path('balance/deposit/', views.BalanceViewSet.as_view({'post': 'deposit'})),
+    path('balance/withdraw/', views.BalanceViewSet.as_view({'post': 'withdraw'})),
 ]
 
 router = DefaultRouter()
