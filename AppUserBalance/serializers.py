@@ -29,12 +29,8 @@ class WithdrawForm(serializers.ModelSerializer):
 
     class Meta:
         model = Balance
-        fields = [
-            'account_balance'
-        ]    
-
-
-    def save(self, commit=True):
-        self.instance.account_balance = self.account_balance
-        return super().save()
+        fields = (
+            'account_balance',
+        ) 
+        extra_kwargs = {'account_balance': {'required': True}}
 

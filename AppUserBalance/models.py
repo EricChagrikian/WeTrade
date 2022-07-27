@@ -1,5 +1,6 @@
 from curses import ALL_MOUSE_EVENTS
 from optparse import AmbiguousOptionError
+from statistics import quantiles
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -8,7 +9,7 @@ from django.contrib.auth.models import User
 
 
 class Balance(models.Model):
-    user = models.OneToOneField(
+    user = models.ForeignKey(
         User,
         related_name='account',
         on_delete=models.CASCADE,
@@ -19,3 +20,4 @@ class Balance(models.Model):
         decimal_places=2
     )
     history = models.DateTimeField(null=True, blank=True)
+

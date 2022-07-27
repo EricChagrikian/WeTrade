@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render
 
 # Create your views here.
@@ -20,7 +21,6 @@ from .serializers import (
 from .models import Balance
 
 
-# @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 class BalanceViewSet(viewsets.ViewSet):
 
@@ -29,9 +29,29 @@ class BalanceViewSet(viewsets.ViewSet):
 
         serializer = DepositForm(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            queryset = Balance.objects.all()
-            serializer = DepositForm(queryset)
-            
+            serializer_instance = Balance.objects.create(
+                user=request.user,
+                account_balance=request.data["account_balance"], 
+                history = datetime.now()
+                )
+
+
+            serializer_instance.save()
+            return Response({'status': 'deposit set'})
+
+    @action(detail=True, methods=['post'])
+    def withdraw(self, request):
+
+        serializer = WithdrawForm(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer_instance = Balance.objects.create(
+                user=request.user,
+                account_balance=request.data["account_balance"], 
+                history = datetime.now()
+                )
+
+
+            serializer_instance.save()
             return Response({'status': 'deposit set'})
         
     # @action(detail=True, methods=['post'])
@@ -43,10 +63,6 @@ class BalanceViewSet(viewsets.ViewSet):
     #     return Response(serializer.data)
         
 
-    #def withdrawal(self,request):
-        #queryset = Balance.objects.all()
-        #serializer = WithdrawForm(queryset)
-        #return Response(serializer.data)    
     
 
 
