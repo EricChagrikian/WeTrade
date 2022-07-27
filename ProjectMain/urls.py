@@ -21,7 +21,7 @@ from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshVie
 from AppRegister.views import MyObtainTokenPairView
 from rest_framework_simplejwt.views import TokenRefreshView
 from AppUserBalance import views
-from AppTrading import views as tradeViewSet
+from AppTrading.views import tradeViewSet
 
 
 
@@ -35,7 +35,8 @@ urlpatterns = [
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('balance/deposit/', views.BalanceViewSet.as_view({'post': 'deposit'})),
     path('balance/withdraw/', views.BalanceViewSet.as_view({'post': 'withdraw'})),
-    path('trade/',tradeViewSet.tradeViewSet.as_view({'post': 'open'})),
+    path('trade/',tradeViewSet.as_view({'post': 'open'})),
+    path('trade/close/<int:pk>',tradeViewSet.as_view({'post': 'close'})),
 ]
 
 router = DefaultRouter()

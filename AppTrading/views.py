@@ -29,9 +29,35 @@ class tradeViewSet(viewsets.ViewSet):
         serializer = TradeSerializers(data=request.data)
         if serializer.is_valid(raise_exception=True):
             price = getInfo(request.data["symbol"])
-            prixtot = price*request.data["quantity"]
+            serializer_trade = Trade.objects.create(
+                user=request.user,
+                amount = price*request.data["amount"],
+                open_price = price,
+                symbol = request.data["symbol"],
+                )
             
-            return Response(prixtot)
+            serializer_trade.save()
+            return Response({'status': 'trade opened'})
+
+    @action(detail=True, methods=['post'])
+    def close(self, request, pk):
+        try:
+            opened_trade = Trade.objects.get(user=request.user, id=pk)
+        except Trade.DoesNotExist:
+            return Response({'status': 'trade not found'})
+        
+        if not opened_trade.open:
+            return Response({'status': 'trade already closed'})
+ 
+        price = getInfo(opened_trade.symbol)
+        opened_trade.close_price = price
+        opened_trade.close_datetime = timezone.now()
+        opened_trade.open = False
+        opened_trade.save()
+
+        print(request)
+        
+        return Response({'status': 'trade closed'})
             
 
 

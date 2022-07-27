@@ -5,6 +5,5 @@ class TradeSerializers(serializers.ModelSerializer):
     
     class Meta:
         model = Trade
-        fields = ('quantity','symbol',)
+        fields = ('amount','symbol',)
 
-    
