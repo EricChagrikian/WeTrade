@@ -34,7 +34,9 @@ class tradeViewSet(viewsets.ViewSet):
             
             total = price * request.data['amount']
 
-            is_balance_enough = Balance.objects.filter(user=request.user).distinct('account_balance')
+
+            #use the same views as appuserbalance to filter the last existing row only
+            is_balance_enough = Balance.objects.filter(user=request.user).values_list('account_balance')
             print(is_balance_enough)
 
             serializer_trade = Trade.objects.create(
