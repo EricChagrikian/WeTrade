@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import CreateView, ListView
+from yaml import serialize_all
 from rest_framework import viewsets, permissions
 from requests import request
 from rest_framework.decorators import api_view, permission_classes, action
@@ -26,24 +27,30 @@ from .models import Balance
 class BalanceViewSet(viewsets.ViewSet):
 
     @action(detail=True, methods=['post'])
-    def deposit(self, request):  
+    def deposit(self, request, pk):  
 
         serializer = DepositForm(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            test=Balance.objects.get("")
-            serializer_instance = Balance.objects.update_or_create(
-                user=request.user,
-                deposit_amount=request.data["deposit_amount"], 
-                history = datetime.now(),
-                )
-            
-            serializer_instance.save()       
+            already_deposit=Balance.objects.get(user=request.user, id=pk)
+            if not already_deposit:
+                serializer_instance = Balance.objects.update_or_create(
+                    user=request.user,
+                    deposit_amount=request.data["deposit_amount"], 
+                    history = datetime.now(),
+                    )
+                serializer_instance.save() 
+            else:
+                add_deposit=request.data["deposit_amount"]
+                already_deposit.account_balance+=add_deposit
+                already_deposit.save()
+                
+      
             return Response({'status': 'deposit set'})
 
         
 
       
-        serializer_instance.account_balance+=request.data["deposit_amount"]
+        # serializer_instance.account_balance+=request.data["deposit_amount"]
 
 
     

@@ -41,12 +41,6 @@ class Balance(models.Model):
 
 
 
-def compute_basic_interest_and_return(basic_deposit_amount):
-    basic_interest = basic_deposit_amount * 365 * 0.02/2
-    basic_investment_return = basic_deposit_amount + basic_interest
-
-    return (basic_interest, basic_investment_return)
-
     # def deposit_total(self):
     #     return sum([item.deposit_amount for item in self.items.all()])
 
