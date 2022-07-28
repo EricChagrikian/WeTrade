@@ -13,9 +13,11 @@ from rest_framework import viewsets, permissions
 from requests import request
 from rest_framework.decorators import  permission_classes, action
 from rest_framework.response import Response
+from django.db.models import Q
 
 from .serializers import TradeSerializers
 from .models import Trade
+from AppUserBalance.models import Balance
 from .crypto import getInfo
 
 
@@ -31,6 +33,9 @@ class tradeViewSet(viewsets.ViewSet):
             price = getInfo(request.data["symbol"])
             
             total = price * request.data['amount']
+
+            is_balance_enough = Balance.objects.filter(user=request.user).distinct('account_balance')
+            print(is_balance_enough)
 
             serializer_trade = Trade.objects.create(
                 user=request.user,
