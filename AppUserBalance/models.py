@@ -32,13 +32,20 @@ class Balance(models.Model):
 
 
     def deposit_total(self, account_balance):
-        self.account_balance += account_balance
+        self.deposit_amount += account_balance
         return account_balance
 
     def withdraw_total(self, account_balance):
         self.withdraw_amount -= account_balance
         return account_balance
 
+
+
+def compute_basic_interest_and_return(basic_deposit_amount):
+    basic_interest = basic_deposit_amount * 365 * 0.02/2
+    basic_investment_return = basic_deposit_amount + basic_interest
+
+    return (basic_interest, basic_investment_return)
 
     # def deposit_total(self):
     #     return sum([item.deposit_amount for item in self.items.all()])

@@ -30,11 +30,13 @@ class BalanceViewSet(viewsets.ViewSet):
 
         serializer = DepositForm(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer_instance = Balance.objects.create(
+            test=Balance.objects.get("")
+            serializer_instance = Balance.objects.update_or_create(
                 user=request.user,
                 deposit_amount=request.data["deposit_amount"], 
                 history = datetime.now(),
                 )
+            
             serializer_instance.save()       
             return Response({'status': 'deposit set'})
 
