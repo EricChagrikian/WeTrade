@@ -34,9 +34,7 @@ class BalanceViewSet(viewsets.ViewSet):
         if serializer.is_valid(raise_exception=True):
 
             all_deposit_amount=Balance.objects.filter(user=request.user).aggregate(deposit=Sum('deposit_amount'))
-            print(all_deposit_amount['deposit'])
             all_withdraw_amount=Balance.objects.filter(user=request.user).aggregate(withdraw=Sum('withdraw_amount'))
-            print(all_withdraw_amount['withdraw']   )
 
             serializer_instance = Balance.objects.create(
                 user=request.user,
@@ -44,33 +42,25 @@ class BalanceViewSet(viewsets.ViewSet):
                 withdraw_amount=0,
                 history=datetime.now()
                 )
-
+            serializer_instance.save()     
                 
             q = Balance.objects.filter(user=request.user)
             max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
-            print(max_ids)
-            Balance.objects.filter(id__in=max_ids).create(  
+            Balance.objects.filter(id__in=max_ids).update(  
                 account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw']    
             )
             
-            serializer_instance.save()        
+   
             return Response({'status': 'deposit set'}) 
-
-                
 
     @action(detail=True, methods=['post'])
     def withdraw(self, request):
 
         serializer = WithdrawForm(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            while serializer.is_valid:
-                all_deposit_amount=Balance.objects.filter(user=request.user).aggregate(deposit=Sum('deposit_amount'))
-                print(all_deposit_amount)
-                return all_deposit_amount
-            while serializer.is_valid:
-                all_withdraw_amount=Balance.objects.filter(user=request.user).aggregate(withdraw=Sum('withdraw_amount'))
-                print(all_withdraw_amount)
-                return all_withdraw_amount
+
+            all_deposit_amount=Balance.objects.filter(user=request.user).aggregate(deposit=Sum('deposit_amount'))
+            all_withdraw_amount=Balance.objects.filter(user=request.user).aggregate(withdraw=Sum('withdraw_amount'))
             
 
             serializer_instance = Balance.objects.create(                
@@ -79,11 +69,12 @@ class BalanceViewSet(viewsets.ViewSet):
                 withdraw_amount=request.data["withdraw_amount"], 
                 history=datetime.now()       
                 )
-            add_instance_to_balance = Balance.objects.create(  
-                account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] - request.data["withdraw_amount"]    
-            )
-            
             serializer_instance.save()
-            add_instance_to_balance.save()
             
+            q = Balance.objects.filter(user=request.user)
+            max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
+            Balance.objects.filter(id__in=max_ids).update(  
+                account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw']    
+            )
+
             return Response({'status': 'withdraw set'})

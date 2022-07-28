@@ -20,9 +20,7 @@ class DepositForm(serializers.ModelSerializer):
         )
         extra_kwargs = {'deposit_amount': {'required': True}}
 
-    # def save(self, commit=True):
-    #     self.instance.account_balance = self.account_balance
-    #     return super().save()
+
 
 
 class WithdrawForm(serializers.ModelSerializer):
