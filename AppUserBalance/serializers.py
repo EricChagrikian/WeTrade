@@ -34,9 +34,4 @@ class WithdrawForm(serializers.ModelSerializer):
         ) 
         extra_kwargs = {'withdraw_amount': {'required': True}}
 
-class AccountBalance(serializers.ModelSerializer):
 
-    class Meta:
-        model = Balance
-        fields = ('')
-        

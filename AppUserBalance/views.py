@@ -13,140 +13,77 @@ from rest_framework import viewsets, permissions
 from requests import request
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
-from django.db.models import Sum
+from django.db.models import Sum, Max
+import numbers
+
 
 from .serializers import (
     DepositForm,
     WithdrawForm,
-    AccountBalance,
 )
 from .models import Balance
 
 
-@permission_classes((permissions.AllowAny,))
+@permission_classes((permissions.IsAuthenticated,))
 class BalanceViewSet(viewsets.ViewSet):
-
+ 
     @action(detail=True, methods=['post'])
-    def deposit(self, request, pk):  
+    def deposit(self, request):  
 
         serializer = DepositForm(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            already_deposit=Balance.objects.get(user=request.user, id=pk)
-            if not already_deposit:
-                serializer_instance = Balance.objects.update_or_create(
-                    user=request.user,
-                    deposit_amount=request.data["deposit_amount"], 
-                    history = datetime.now(),
-                    )
-                serializer_instance.save() 
-            else:
-                add_deposit=request.data["deposit_amount"]
-                already_deposit.account_balance+=add_deposit
-                already_deposit.save()
+
+            all_deposit_amount=Balance.objects.filter(user=request.user).aggregate(deposit=Sum('deposit_amount'))
+            print(all_deposit_amount['deposit'])
+            all_withdraw_amount=Balance.objects.filter(user=request.user).aggregate(withdraw=Sum('withdraw_amount'))
+            print(all_withdraw_amount['withdraw']   )
+
+            serializer_instance = Balance.objects.create(
+                user=request.user,
+                deposit_amount=request.data["deposit_amount"], 
+                withdraw_amount=0,
+                history=datetime.now()
+                )
+
                 
-      
-            return Response({'status': 'deposit set'})
+            q = Balance.objects.filter(user=request.user)
+            max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
+            print(max_ids)
+            Balance.objects.filter(id__in=max_ids).create(  
+                account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw']    
+            )
+            
+            serializer_instance.save()        
+            return Response({'status': 'deposit set'}) 
 
-        
-
-      
-        # serializer_instance.account_balance+=request.data["deposit_amount"]
-
-
-    
+                
 
     @action(detail=True, methods=['post'])
     def withdraw(self, request):
 
         serializer = WithdrawForm(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer_instance = Balance.objects.create(
+            while serializer.is_valid:
+                all_deposit_amount=Balance.objects.filter(user=request.user).aggregate(deposit=Sum('deposit_amount'))
+                print(all_deposit_amount)
+                return all_deposit_amount
+            while serializer.is_valid:
+                all_withdraw_amount=Balance.objects.filter(user=request.user).aggregate(withdraw=Sum('withdraw_amount'))
+                print(all_withdraw_amount)
+                return all_withdraw_amount
+            
+
+            serializer_instance = Balance.objects.create(                
                 user=request.user,
+                deposit_amount=0,
                 withdraw_amount=request.data["withdraw_amount"], 
-                history = datetime.now()
+                history=datetime.now()       
                 )
-
-
+            add_instance_to_balance = Balance.objects.create(  
+                account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] - request.data["withdraw_amount"]    
+            )
+            
             serializer_instance.save()
+            add_instance_to_balance.save()
             
             return Response({'status': 'withdraw set'})
-
-
-
-    def deposit_total(self):
-        return sum([item.deposit_amount for item in self.items.all()])
-
-    def withdraw_total(self):
-        return sum([item.withdraw_amount for item in self.items.all()])
-
-    def save(self, *args, **kwargs):
-       self.account_balance = self.deposit_total - self.withdraw_total 
-       super().save(*args, **kwargs)    
-        
-    # @action(detail=True, methods=['post'])
-    # def deposit(self, request):
-    #     queryset = Balance.objects.all()
-    #     serializer = DepositForm(queryset)
-    #     Balance.account_balance(serializer)
-    #     Balance.save()
-    #     return Response(serializer.data)
-        
-
-    
-
-
-
-
-# class DepositMoneyView(ListView):
-
-
-#     def form_valid(self, serializer):
-#         amount = serializer.cleaned_data.get('amount')
-#         account = self.request.user.account
-#         now = timezone.now()
-
-#         account.history = now
-
-#         account.Balance.account_balance += amount
-#         account.save(
-#             update_fields=[
-#                 'history',
-#                 'account_balance'
-#             ]
-#         )
-
-#         if request.method == 'POST':
-#             serializer = DepositForm(data=request.data)
-#             if serializer.is_valid():
-#                 serializer.save()
-#                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)        
-
-
-
-# @api_view(['POST'])
-# class WithdrawMoneyView(request):
-
-
-#     def form_valid(self, serializer):
-#         amount = serializer.cleaned_data.get('amount')
-#         account = self.request.user.account
-        
-#         if not account.withdrawal_date:
-#             now = timezone.now()
-#             account.withdrawal_date = now
-
-#         account.balance -= form.cleaned_data.get('amount')
-#         account.save(
-#             update_fields=[
-#                 'withdrawal_date',
-#                 'balance'
-#             ]
-#         )
-
-#         messages.success(
-#             self.request,
-#             f'Successfully withdrawn {amount}$ from your account'
-#         )
-
-#         return super().form_valid(form)
