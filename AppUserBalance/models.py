@@ -6,18 +6,25 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-
-
 class Balance(models.Model):
     user = models.ForeignKey(
         User,
-        related_name='account',
         on_delete=models.CASCADE,
+    )
+    history = models.DateTimeField(null=True, blank=True)
+    
+    deposit_amount = models.DecimalField(
+        default=0,
+        max_digits=12,
+        decimal_places=2
+    )
+    withdraw_amount = models.DecimalField(
+        default=0,
+        max_digits=12,
+        decimal_places=2
     )
     account_balance = models.DecimalField(
         default=0,
         max_digits=12,
         decimal_places=2
     )
-    history = models.DateTimeField(null=True, blank=True)
-
