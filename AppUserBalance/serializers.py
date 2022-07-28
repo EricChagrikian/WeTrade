@@ -16,9 +16,9 @@ class DepositForm(serializers.ModelSerializer):
     class Meta:
         model = Balance
         fields = (
-            'account_balance',
+            'deposit_amount',
         )
-        extra_kwargs = {'account_balance': {'required': True}}
+        extra_kwargs = {'deposit_amount': {'required': True}}
 
     # def save(self, commit=True):
     #     self.instance.account_balance = self.account_balance
@@ -30,7 +30,13 @@ class WithdrawForm(serializers.ModelSerializer):
     class Meta:
         model = Balance
         fields = (
-            'account_balance',
+            'withdraw_amount',
         ) 
-        extra_kwargs = {'account_balance': {'required': True}}
+        extra_kwargs = {'withdraw_amount': {'required': True}}
 
+class AccountBalance(serializers.ModelSerializer):
+
+    class Meta:
+        model = Balance
+        fields = ('')
+        

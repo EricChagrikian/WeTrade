@@ -12,10 +12,12 @@ from rest_framework import viewsets, permissions
 from requests import request
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
+from django.db.models import Sum
 
 from .serializers import (
     DepositForm,
     WithdrawForm,
+    AccountBalance,
 )
 from .models import Balance
 
@@ -24,19 +26,25 @@ from .models import Balance
 class BalanceViewSet(viewsets.ViewSet):
 
     @action(detail=True, methods=['post'])
-    def deposit(self, request):
+    def deposit(self, request):  
 
         serializer = DepositForm(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer_instance = Balance.objects.create(
                 user=request.user,
-                account_balance=request.data["account_balance"], 
-                history = datetime.now()
+                deposit_amount=request.data["deposit_amount"], 
+                history = datetime.now(),
                 )
-
-
-            serializer_instance.save()
+            serializer_instance.save()       
             return Response({'status': 'deposit set'})
+
+        
+
+      
+        serializer_instance.account_balance+=request.data["deposit_amount"]
+
+
+    
 
     @action(detail=True, methods=['post'])
     def withdraw(self, request):
@@ -45,13 +53,26 @@ class BalanceViewSet(viewsets.ViewSet):
         if serializer.is_valid(raise_exception=True):
             serializer_instance = Balance.objects.create(
                 user=request.user,
-                account_balance=request.data["account_balance"], 
+                withdraw_amount=request.data["withdraw_amount"], 
                 history = datetime.now()
                 )
 
 
             serializer_instance.save()
-            return Response({'status': 'deposit set'})
+            
+            return Response({'status': 'withdraw set'})
+
+
+
+    def deposit_total(self):
+        return sum([item.deposit_amount for item in self.items.all()])
+
+    def withdraw_total(self):
+        return sum([item.withdraw_amount for item in self.items.all()])
+
+    def save(self, *args, **kwargs):
+       self.account_balance = self.deposit_total - self.withdraw_total 
+       super().save(*args, **kwargs)    
         
     # @action(detail=True, methods=['post'])
     # def deposit(self, request):
