@@ -12,19 +12,13 @@ class Trade(models.Model):
         on_delete=models.CASCADE,
         )
     symbol = models.TextField()
-    amount = models.DecimalField(
-        default=0,
-        max_digits=12,
-        decimal_places=2
+    amount = models.FloatField(
+        default=0
     )
-    open_price = models.DecimalField(
-        max_digits=12,
-        decimal_places=10,
+    open_price = models.FloatField(
         null=True, blank=True
     )###
-    close_price = models.DecimalField(
-        max_digits=12,
-        decimal_places=10,
+    close_price = models.FloatField(
         blank=True, null=True
     )
     open_datetime = models.DateTimeField(default=datetime.now)
