@@ -31,6 +31,7 @@ urlpatterns = [
     path('api/api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/register/',RegisterUserAPIView.as_view()),
+    # path('api/profile/',UserViewSet.as_view({'get': 'queryset'})),    
     path('api/login/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
     path('api/login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/balance/', views.BalanceViewSet.as_view({'get': 'check_balance'})), #view current balance

@@ -1,22 +1,13 @@
-from datetime import datetime
 from django.shortcuts import render
-
-# Create your views here.
-
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import CreateView, ListView
 from yaml import serialize_all
 from rest_framework import viewsets, permissions
 from requests import request
-from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.decorators import permission_classes, action
 from rest_framework.response import Response
 from django.db.models import Sum, Max
 import numbers
-
-
 from .serializers import (
     DepositForm,
     WithdrawForm,
@@ -54,13 +45,7 @@ class BalanceViewSet(viewsets.ViewSet):
             else:
                 serializer_instance.delete()
                 return Response({'Value has to be above 0'})
-            # is_first_update = Balance.objects.filter(id__in=max_ids).values('history_balance_update')
-            # print(is_first_update)
-            # if (is_first_update == None):
-            #     return Response({'status': 'deposit set'}) 
-            # else:
-            #     Balance.objects.filter(id__in=max_ids).update(history_balance_update=timezone.now())
-            #     return Response({'status': 'deposit set'}) 
+                
 
     @action(detail=True, methods=['get'])
     def check_balance(self, request):  
@@ -68,7 +53,7 @@ class BalanceViewSet(viewsets.ViewSet):
         if not current_balance:
             return Response('0 credits') 
         return Response(current_balance) 
-    
+
 
     @action(detail=True, methods=['post'])
     def withdraw(self, request):

@@ -1,4 +1,0 @@
-/balance = historique des transactions
-/balance/current = argent actuel[account_balance]
-/balance/deposit = dépôt d'argent
-/balance/withdrawal = retirer de l'argent
