@@ -40,18 +40,23 @@ class BalanceViewSet(viewsets.ViewSet):
                 user=request.user,
                 deposit_amount=request.data["deposit_amount"], 
                 withdraw_amount=0,
-                history=datetime.now()
+                history=timezone.now()
                 )
             serializer_instance.save()     
                 
             q = Balance.objects.filter(user=request.user)
             max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
             Balance.objects.filter(id__in=max_ids).update(  
-                account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw']    
+                account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] + request.data["deposit_amount"]
             )
-            
-   
             return Response({'status': 'deposit set'}) 
+            # is_first_update = Balance.objects.filter(id__in=max_ids).values('history_balance_update')
+            # print(is_first_update)
+            # if (is_first_update == None):
+            #     return Response({'status': 'deposit set'}) 
+            # else:
+            #     Balance.objects.filter(id__in=max_ids).update(history_balance_update=timezone.now())
+            #     return Response({'status': 'deposit set'}) 
 
     @action(detail=True, methods=['post'])
     def withdraw(self, request):
@@ -67,14 +72,15 @@ class BalanceViewSet(viewsets.ViewSet):
                 user=request.user,
                 deposit_amount=0,
                 withdraw_amount=request.data["withdraw_amount"], 
-                history=datetime.now()       
+                history=timezone.now()       
                 )
             serializer_instance.save()
             
             q = Balance.objects.filter(user=request.user)
             max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
             Balance.objects.filter(id__in=max_ids).update(  
-                account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw']    
+                account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] - request.data["withdraw_amount"],
+                history_balance_update=timezone.now()
             )
 
             return Response({'status': 'withdraw set'})

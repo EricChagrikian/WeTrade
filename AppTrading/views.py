@@ -39,6 +39,7 @@ class tradeViewSet(viewsets.ViewSet):
                 amount = total,
                 open_price = price,
                 symbol = request.data["symbol"],
+                quantity = request.data['amount']
                 )
 
             #use the same views as appuserbalance to filter the last existing row only
@@ -46,7 +47,6 @@ class tradeViewSet(viewsets.ViewSet):
             q = Balance.objects.filter(user=request.user)
             max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
             is_balance_enough = Balance.objects.filter(id__in=max_ids).aggregate(num=Max("account_balance")).get("num")
-            print(is_balance_enough)
 
             if (is_balance_enough >= total):
                 serializer_trade.save()
@@ -72,7 +72,28 @@ class tradeViewSet(viewsets.ViewSet):
         opened_trade.open = False
         opened_trade.save()
 
-        print(request)
+        open = Trade.objects.filter(user=request.user, id=pk).aggregate(open=Max('open')).get("open")
+        if not (open==1):
+            opened_trade.delete()
+            return Response({'status': 'trade already closed'})
+
+        open_price=Trade.objects.filter(user=request.user, id=pk).aggregate(num=Max("open_price")).get("num")
+        get_total = float(price - open_price)
+        get_quantity = Trade.objects.filter(user=request.user, id=pk).aggregate(num=Max("quantity")).get("num")
+        profit_or_loss = get_total*get_quantity
+        print(profit_or_loss)
+        amount_bought_on_open = Trade.objects.filter(user=request.user, id=pk).aggregate(num=Max("amount")).get("num")
+
+        balance_before_close=Balance.objects.filter(user=request.user).aggregate(balance=Max('account_balance')).get("balance")
+        print(balance_before_close)
+        q = Balance.objects.filter(user=request.user)
+        max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
+        Balance.objects.filter(id__in=max_ids).update(  
+            account_balance= balance_before_close + profit_or_loss + amount_bought_on_open,
+            history_balance_update=timezone.now()
+        )
+
+
         
         return Response({'status': 'trade closed'})
             

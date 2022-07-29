@@ -15,6 +15,9 @@ class Trade(models.Model):
     amount = models.FloatField(
         default=0
     )
+    quantity = models.FloatField(
+        default=0
+    )
     open_price = models.FloatField(
         null=True, blank=True
     )###

@@ -12,6 +12,8 @@ class Balance(models.Model):
         on_delete=models.CASCADE,
     )
     history = models.DateTimeField(null=True, blank=True)
+
+    history_balance_update = models.DateTimeField(null=True, blank=True)
     
     deposit_amount = models.FloatField(
         default=0
@@ -20,5 +22,8 @@ class Balance(models.Model):
         default=0
     )
     account_balance = models.FloatField(
+        default=0
+    )
+    first_balance = models.FloatField(
         default=0
     )
