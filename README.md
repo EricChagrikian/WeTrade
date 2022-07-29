@@ -3,7 +3,7 @@ Using HEROKU: https://wetradeapp.herokuapp.com/
 To try the API, please use Insomnia, Postman or anything similar.
 
 
-###Endpoints API
+### Endpoints API
 
  Route  | Method | Need authentication? | Usage 
  ------ | -------| -------------| -----
@@ -24,11 +24,11 @@ To try the API, please use Insomnia, Postman or anything similar.
 
  
  
- ### List of forms
+### List of forms
  
  
  
-**-Form to register:**
+## **-Form to register:**
  
  {
  
@@ -48,7 +48,7 @@ To try the API, please use Insomnia, Postman or anything similar.
  
  
  
- **-Form to login:** 
+## **-Form to login:** 
  
  {
  
@@ -60,7 +60,7 @@ To try the API, please use Insomnia, Postman or anything similar.
  
  
  
- **-Form to deposit in balance:** 
+## **-Form to deposit in balance:** 
  
  {
  
@@ -70,7 +70,7 @@ To try the API, please use Insomnia, Postman or anything similar.
  
  
  
- **-Form to withdraw from balance:** 
+## **-Form to withdraw from balance:** 
  
  {
  
@@ -80,7 +80,7 @@ To try the API, please use Insomnia, Postman or anything similar.
  
  
  
-  **-Form to open a trade:** 
+##  **-Form to open a trade:** 
  
  {
  
@@ -92,7 +92,7 @@ To try the API, please use Insomnia, Postman or anything similar.
  
  
  
-  **-Form to close a trade:** 
+##  **-Form to close a trade:** 
  
  Let empty and just POST
  
