@@ -1,3 +1,7 @@
+Using HEROKU: https://wetradeapp.herokuapp.com/
+To try the API, please use Insomnia, Postman or anything similar.
+
+
 ###Endpoints API
 
  Route  | Method | Need authentication? | Usage 
