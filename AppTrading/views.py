@@ -34,11 +34,15 @@ class tradeViewSet(viewsets.ViewSet):
                 quantity = request.data['amount']
                 )
 
+            balance_before_open=Balance.objects.filter(user=request.user).aggregate(balance=Max('account_balance')).get('balance')
             q = Balance.objects.filter(user=request.user)
             max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
             is_balance_enough = Balance.objects.filter(id__in=max_ids).aggregate(num=Max("account_balance")).get("num")
 
             if (is_balance_enough >= total):
+                Balance.objects.filter(id__in=max_ids).update(  
+                    account_balance=balance_before_open - total
+                )                
                 serializer_trade.save()
                 return Response({'status': 'trade opened'})
             else:
