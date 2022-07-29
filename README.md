@@ -60,7 +60,5 @@
  
  
   **-Form to close a trade:** 
- {
- "<let empty>"
- }
+Let empty and just POST
  
