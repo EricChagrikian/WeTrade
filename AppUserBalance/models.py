@@ -12,19 +12,18 @@ class Balance(models.Model):
         on_delete=models.CASCADE,
     )
     history = models.DateTimeField(null=True, blank=True)
+
+    history_balance_update = models.DateTimeField(null=True, blank=True)
     
-    deposit_amount = models.DecimalField(
-        default=0,
-        max_digits=12,
-        decimal_places=2
+    deposit_amount = models.FloatField(
+        default=0
     )
-    withdraw_amount = models.DecimalField(
-        default=0,
-        max_digits=12,
-        decimal_places=2
+    withdraw_amount = models.FloatField(
+        default=0
     )
-    account_balance = models.DecimalField(
-        default=0,
-        max_digits=12,
-        decimal_places=2
+    account_balance = models.FloatField(
+        default=0
+    )
+    first_balance = models.FloatField(
+        default=0
     )

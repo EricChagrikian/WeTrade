@@ -26,17 +26,25 @@ from AppTrading.views import tradeViewSet
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('register/',RegisterUserAPIView.as_view()),
-    path('login/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
-    path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('balance/deposit/', views.BalanceViewSet.as_view({'post': 'deposit'})),
-    path('balance/withdraw/', views.BalanceViewSet.as_view({'post': 'withdraw'})),
-    path('trade/',tradeViewSet.as_view({'post': 'open'})),
-    path('trade/close/<int:pk>',tradeViewSet.as_view({'post': 'close'})),
+    path('api/admin/', admin.site.urls),
+    path('api/api-auth/', include('rest_framework.urls')),
+    path('api/api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/register/',RegisterUserAPIView.as_view()),
+    # path('api/profile/',UserViewSet.as_view({'get': 'queryset'})),    
+    path('api/login/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'),
+    path('api/login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/balance/', views.BalanceViewSet.as_view({'get': 'check_balance'})), #view current balance
+    path('api/balance/deposit/', views.BalanceViewSet.as_view({'post': 'deposit'})), #deposit money from balance
+    path('api/balance/withdraw/', views.BalanceViewSet.as_view({'post': 'withdraw'})), #withdraw money from balance
+    path('api/trade/index',tradeViewSet.as_view({'get': 'list_trades'})), #list of all the trades of the authenticated user with details
+    path('api/trade/<int:pk>',tradeViewSet.as_view({'get': 'specific_trade'})), #details of one specific trade
+    path('api/trade/openPNL/',tradeViewSet.as_view({'get': 'openPNL'})), #shows profit or loss of all open trades
+    path('api/trade/closePNL/',tradeViewSet.as_view({'get': 'closedPNL'})), #shows profit or loss of all closed trades
+    path('api/trade/open',tradeViewSet.as_view({'get': 'list_opened_trades'})), #lists opened trades details of authenticated user
+    path('api/trade/close',tradeViewSet.as_view({'get': 'list_closed_trades'})), #lists closed trades details of authenticated user
+    path('api/trade/open',tradeViewSet.as_view({'post': 'open'})),
+    path('api/trade/close/<int:pk>',tradeViewSet.as_view({'post': 'close'})),
 ]
 
 router = DefaultRouter()
