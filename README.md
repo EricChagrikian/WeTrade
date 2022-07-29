@@ -1,4 +1,4 @@
-Endpoints API
+###Endpoints API
 
  Route  | Method | Need authentication? | Usage 
  ------ | -------| -------------| -----
@@ -16,3 +16,51 @@ Endpoints API
  /api/trade/close/ | GET | Yes | List closed trades details of authenticated user
  /api/trade/open/ | POST | Yes | Open a new trade 
  /api/trade/close/<id>/ | POST | Yes | Close an existing trade
+
+ 
+ 
+ ### List of forms
+ 
+ 
+**-Form to register:**
+ {
+ "username": "your_username",
+  "password": "your_password", 
+  "password2": "your_password"
+  "email": "your@email.com",
+  "first_name": "your_first_name",
+  "last_name": "your_last_name"
+ }
+ 
+ 
+ **-Form to login:** 
+ {
+ "username": "your_username",
+  "password": "your_password"
+ }
+ 
+ 
+ **-Form to deposit in balance:** 
+ {
+ "deposit_amount": "<amount(can be decimals but not negative or 0)>"
+ }
+ 
+ 
+ **-Form to withdraw from balance:** 
+ {
+"withdraw_amount": "<amount(can be decimals but not negative or 0)>"
+ }
+ 
+ 
+  **-Form to open a trade:** 
+ {
+"amount": "<amount(can be decimals but not negative or 0)>",
+ "symbol": "<write one of those: "BTC" OR "ETH">"
+ }
+ 
+ 
+  **-Form to close a trade:** 
+ {
+ <let empty>
+ }
+ 
