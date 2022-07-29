@@ -39,7 +39,7 @@ class tradeViewSet(viewsets.ViewSet):
             max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
             is_balance_enough = Balance.objects.filter(id__in=max_ids).aggregate(num=Max("account_balance")).get("num")
 
-            if (is_balance_enough >= total):
+            if (is_balance_enough >= total and serializer_trade > 0):
                 Balance.objects.filter(id__in=max_ids).update(  
                     account_balance=balance_before_open - total
                 )                
@@ -47,7 +47,7 @@ class tradeViewSet(viewsets.ViewSet):
                 return Response({'status': 'trade opened'})
             else:
                 serializer_trade.delete()
-                return Response('Not enough balance for that trade')
+                return Response('Not enough balance for that trade, or the amount user inserted is not higher than 0')
 
 
     @action(detail=True, methods=['post'])
