@@ -1,4 +1,5 @@
 Using HEROKU: https://wetradeapp.herokuapp.com/
+
 To try the API, please use Insomnia, Postman or anything similar.
 
 
@@ -26,43 +27,72 @@ To try the API, please use Insomnia, Postman or anything similar.
  ### List of forms
  
  
+ 
 **-Form to register:**
+ 
  {
+ 
  "username": "your_username",
+ 
   "password": "your_password", 
+ 
   "password2": "your_password"
+ 
   "email": "your@email.com",
+ 
   "first_name": "your_first_name",
+ 
   "last_name": "your_last_name"
+ 
  }
+ 
  
  
  **-Form to login:** 
+ 
  {
+ 
  "username": "your_username",
+ 
   "password": "your_password"
+ 
  }
+ 
  
  
  **-Form to deposit in balance:** 
+ 
  {
+ 
  "deposit_amount": "<amount(can be decimals but not negative or 0)>"
+ 
  }
+ 
  
  
  **-Form to withdraw from balance:** 
+ 
  {
+ 
 "withdraw_amount": "<amount(can be decimals but not negative or 0)>"
+ 
  }
+ 
  
  
   **-Form to open a trade:** 
+ 
  {
+ 
 "amount": "<amount(can be decimals but not negative or 0)>",
+ 
  "symbol": "<write one of those: "BTC" OR "ETH">"
+ 
  }
  
  
+ 
   **-Form to close a trade:** 
-Let empty and just POST
+ 
+ Let empty and just POST
  
