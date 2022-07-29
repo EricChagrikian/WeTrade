@@ -33,10 +33,10 @@ To try the API, please use Insomnia, Postman or anything similar.
  {
  
  "username": "your_username",
- 
+
   "password": "your_password", 
 
-  "password2": "your_password"
+  "password2": "your_password",
 
   "email": "your@email.com",
 
