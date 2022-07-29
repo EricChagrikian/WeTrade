@@ -61,6 +61,6 @@
  
   **-Form to close a trade:** 
  {
- <let empty>
+ "<let empty>"
  }
  
