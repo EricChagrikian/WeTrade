@@ -13,7 +13,7 @@ from rest_framework import viewsets, permissions
 from requests import request
 from rest_framework.decorators import  permission_classes, action
 from rest_framework.response import Response
-from django.db.models import Q
+from django.db.models import Q, Max
 
 from .serializers import TradeSerializers
 from .models import Trade
@@ -34,20 +34,27 @@ class tradeViewSet(viewsets.ViewSet):
             
             total = price * request.data['amount']
 
-
-            #use the same views as appuserbalance to filter the last existing row only
-            is_balance_enough = Balance.objects.filter(user=request.user).values_list('account_balance')
-            print(is_balance_enough)
-
             serializer_trade = Trade.objects.create(
                 user=request.user,
                 amount = total,
                 open_price = price,
                 symbol = request.data["symbol"],
                 )
-            
-            serializer_trade.save()
-            return Response({'status': 'trade opened'})
+
+            #use the same views as appuserbalance to filter the last existing row only
+
+            q = Balance.objects.filter(user=request.user)
+            max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
+            is_balance_enough = Balance.objects.filter(id__in=max_ids).aggregate(num=Max("account_balance")).get("num")
+            print(is_balance_enough)
+
+            if (is_balance_enough >= total):
+                serializer_trade.save()
+                return Response({'status': 'trade opened'})
+            else:
+                serializer_trade.delete()
+                return Response('Not enough balance for that trade')
+
 
     @action(detail=True, methods=['post'])
     def close(self, request, pk):
