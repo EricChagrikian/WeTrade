@@ -65,10 +65,9 @@ class BalanceViewSet(viewsets.ViewSet):
     @action(detail=True, methods=['get'])
     def check_balance(self, request):  
         current_balance=Balance.objects.filter(user=request.user).aggregate(balance=Max('account_balance')).get("balance")
-        print(current_balance)
         if not current_balance:
-            return Response({'0 credits'}) 
-        return Response({current_balance + ' credits'}) 
+            return Response('0 credits') 
+        return Response(current_balance) 
     
 
     @action(detail=True, methods=['post'])
