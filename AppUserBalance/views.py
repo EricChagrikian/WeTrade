@@ -42,14 +42,18 @@ class BalanceViewSet(viewsets.ViewSet):
                 withdraw_amount=0,
                 history=timezone.now()
                 )
-            serializer_instance.save()     
-                
-            q = Balance.objects.filter(user=request.user)
-            max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
-            Balance.objects.filter(id__in=max_ids).update(  
-                account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] + request.data["deposit_amount"]
-            )
-            return Response({'status': 'deposit set'}) 
+            if (serializer_instance.deposit_amount > 0):
+                serializer_instance.save()     
+                    
+                q = Balance.objects.filter(user=request.user)
+                max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
+                Balance.objects.filter(id__in=max_ids).update(  
+                    account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] + request.data["deposit_amount"]
+                )
+                return Response({'status': 'deposit set'}) 
+            else:
+                serializer_instance.delete()
+                return Response({'Value has to be above 0'})
             # is_first_update = Balance.objects.filter(id__in=max_ids).values('history_balance_update')
             # print(is_first_update)
             # if (is_first_update == None):
@@ -57,6 +61,15 @@ class BalanceViewSet(viewsets.ViewSet):
             # else:
             #     Balance.objects.filter(id__in=max_ids).update(history_balance_update=timezone.now())
             #     return Response({'status': 'deposit set'}) 
+
+    @action(detail=True, methods=['get'])
+    def check_balance(self, request):  
+        current_balance=Balance.objects.filter(user=request.user).aggregate(balance=Max('account_balance')).get("balance")
+        print(current_balance)
+        if not current_balance:
+            return Response({'0 credits'}) 
+        return Response({current_balance + ' credits'}) 
+    
 
     @action(detail=True, methods=['post'])
     def withdraw(self, request):
@@ -74,13 +87,17 @@ class BalanceViewSet(viewsets.ViewSet):
                 withdraw_amount=request.data["withdraw_amount"], 
                 history=timezone.now()       
                 )
-            serializer_instance.save()
-            
-            q = Balance.objects.filter(user=request.user)
-            max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
-            Balance.objects.filter(id__in=max_ids).update(  
-                account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] - request.data["withdraw_amount"],
-                history_balance_update=timezone.now()
-            )
 
-            return Response({'status': 'withdraw set'})
+            if (serializer_instance.withdraw_amount > 0):
+                serializer_instance.save()
+            
+                q = Balance.objects.filter(user=request.user)
+                max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
+                Balance.objects.filter(id__in=max_ids).update(  
+                    account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] - request.data["withdraw_amount"],
+                    history_balance_update=timezone.now()
+                )
+                return Response({'status': 'withdraw set'})
+            else:
+                serializer_instance.delete()
+                return Response({'Value has to be above 0'})
