@@ -30,7 +30,7 @@ urlpatterns = [
     path('api/api-auth/', include('rest_framework.urls')),
     path('api/api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('/',RegisterUserAPIView.as_view()), #to register a new user
+    path('api/register/',RegisterUserAPIView.as_view()), #to register a new user
     # path('api/profile/',UserViewSet.as_view({'get': 'queryset'})),    
     path('api/login/', MyObtainTokenPairView.as_view(), name='token_obtain_pair'), #to login as an user
     path('api/login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
