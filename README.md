@@ -1,3 +1,5 @@
+API to simulate depositing/withdrawing money to/from an user's account, to open trades around the BTC and ETH cryptos, and then close them.
+
 Using HEROKU: https://wetradeapp.herokuapp.com/
 
 To try the API, please use Insomnia, Postman or anything similar.
