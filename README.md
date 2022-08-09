@@ -66,7 +66,7 @@ To try the API, please use Insomnia, Postman or anything similar.
  
  {
  
- "deposit_amount": "<amount(can be decimals but not negative or 0)>"
+ "deposit_amount": <amount(can be decimals but not negative or 0)>
  
  }
  
@@ -76,7 +76,7 @@ To try the API, please use Insomnia, Postman or anything similar.
  
  {
  
-"withdraw_amount": "<amount(can be decimals but not negative or 0)>"
+"withdraw_amount": <amount(can be decimals but not negative or 0)>
  
  }
  
@@ -86,9 +86,9 @@ To try the API, please use Insomnia, Postman or anything similar.
  
  {
  
-"amount": "<amount(can be decimals but not negative or 0)>",
+"amount": <amount(can be decimals but not negative or 0)>,
  
- "symbol": "<write one of those: "BTC" OR "ETH">"
+ "symbol": <write one of those: "BTC" OR "ETH">
  
  }
  
