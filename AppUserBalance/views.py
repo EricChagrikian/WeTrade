@@ -34,12 +34,14 @@ class BalanceViewSet(viewsets.ViewSet):
                 history=timezone.now()
                 )
             if (serializer_instance.deposit_amount > 0):
-                serializer_instance.save()     
+                serializer_instance.save() 
+
+            if (serializer_instance.deposit_amount > 0):     
                     
                 q = Balance.objects.filter(user=request.user)
                 max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
                 Balance.objects.filter(id__in=max_ids).update(  
-                    account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] + float(request.data["deposit_amount"])
+                    account_balance=float(all_deposit_amount['deposit']) - float(all_withdraw_amount['withdraw']) + float(request.data["deposit_amount"])
                 )
                 return Response({'status': 'deposit set'}) 
             else:
