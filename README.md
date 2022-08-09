@@ -19,8 +19,8 @@ To try the API, please use Insomnia, Postman or anything similar.
  /api/trade/<id<id>>/ | GET | Yes | Details of one specific trade
  /api/trade/openPNL/ | GET | Yes | Show profit or loss of all open trades
  /api/trade/closePNL/ | GET | Yes | Shows profit or loss of all closed trades
- /api/trade/open/ | GET | Yes | List opened trades details of authenticated user
- /api/trade/close/ | GET | Yes | List closed trades details of authenticated user
+ /api/trade/opened/ | GET | Yes | List opened trades details of authenticated user
+ /api/trade/closed/ | GET | Yes | List closed trades details of authenticated user
  /api/trade/open/ | POST | Yes | Open a new trade 
  /api/trade/close/<id<id>>/ | POST | Yes | Close an existing trade
 
