@@ -54,7 +54,7 @@ class BalanceViewSet(viewsets.ViewSet):
         
         q = Balance.objects.filter(user=request.user)
         max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
-        current_balance: Balance.objects.filter(id__in=max_ids).get("balance")
+        current_balance: Balance.objects.filter(id__in=max_ids).aggregate(balance='account_balance').get("balance")
         # .aggregate(balance=Max('account_balance')).get("balance")
         if not current_balance:
             return Response('0 credits') 
