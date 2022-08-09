@@ -50,8 +50,12 @@ class BalanceViewSet(viewsets.ViewSet):
                 
 
     @action(detail=True, methods=['get'])
-    def check_balance(self, request):  
-        current_balance=Balance.objects.filter(user=request.user).aggregate(balance=Max('account_balance')).get("balance")
+    def check_balance(self, request): 
+        
+        q = Balance.objects.filter(user=request.user)
+        max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
+        current_balance: Balance.objects.filter(id__in=max_ids).get("balance")
+        # .aggregate(balance=Max('account_balance')).get("balance")
         if not current_balance:
             return Response('0 credits') 
         return Response(current_balance) 
