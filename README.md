@@ -16,13 +16,13 @@ To try the API, please use Insomnia, Postman or anything similar.
  /api/balance/deposit/ | POST | Yes | Deposit money from balance
  /api/balance/withdraw/ | POST | Yes | Withdraw money from balance
  /api/trade/index/ | GET | Yes | List of all the trades of the authenticated user with details
- /api/trade/<id>/ | GET | Yes | Details of one specific trade
+ /api/trade/<id<id>>/ | GET | Yes | Details of one specific trade
  /api/trade/openPNL/ | GET | Yes | Show profit or loss of all open trades
  /api/trade/closePNL/ | GET | Yes | Shows profit or loss of all closed trades
- /api/trade/open/ | GET | Yes | List opened trades details of authenticated user
- /api/trade/close/ | GET | Yes | List closed trades details of authenticated user
+ /api/trade/opened/ | GET | Yes | List opened trades details of authenticated user
+ /api/trade/closed/ | GET | Yes | List closed trades details of authenticated user
  /api/trade/open/ | POST | Yes | Open a new trade 
- /api/trade/close/<id>/ | POST | Yes | Close an existing trade
+ /api/trade/close/<id<id>>/ | POST | Yes | Close an existing trade
 
  
  
@@ -66,7 +66,7 @@ To try the API, please use Insomnia, Postman or anything similar.
  
  {
  
- "deposit_amount": "<amount(can be decimals but not negative or 0)>"
+ "deposit_amount": <amount(can be decimals but not negative or 0)>
  
  }
  
@@ -76,7 +76,7 @@ To try the API, please use Insomnia, Postman or anything similar.
  
  {
  
-"withdraw_amount": "<amount(can be decimals but not negative or 0)>"
+"withdraw_amount": <amount(can be decimals but not negative or 0)>
  
  }
  
@@ -86,9 +86,9 @@ To try the API, please use Insomnia, Postman or anything similar.
  
  {
  
-"amount": "<amount(can be decimals but not negative or 0)>",
+"amount": <amount(can be decimals but not negative or 0)>,
  
- "symbol": "<write one of those: "BTC" OR "ETH">"
+ "symbol": <write one of those: "BTC" OR "ETH">
  
  }
  
