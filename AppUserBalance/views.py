@@ -29,7 +29,7 @@ class BalanceViewSet(viewsets.ViewSet):
 
             serializer_instance = Balance.objects.create(
                 user=request.user,
-                deposit_amount=request.data["deposit_amount"], 
+                deposit_amount=float(request.data["deposit_amount"]), 
                 withdraw_amount=0,
                 history=timezone.now()
                 )
