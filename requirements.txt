@@ -16,6 +16,7 @@ click-plugins==1.1.1
 click-repl==0.2.0
 cmake==3.24.0
 colorama==0.4.3
+conda==4.3.16
 configobj==5.0.6
 constantly==15.1.0
 cryptography==2.8
