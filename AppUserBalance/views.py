@@ -68,7 +68,7 @@ class BalanceViewSet(viewsets.ViewSet):
             serializer_instance = Balance.objects.create(                
                 user=request.user,
                 deposit_amount=0,
-                withdraw_amount=request.data["withdraw_amount"], 
+                withdraw_amount=float(request.data["withdraw_amount"]), 
                 history=timezone.now()       
                 )
 
@@ -78,7 +78,7 @@ class BalanceViewSet(viewsets.ViewSet):
                 q = Balance.objects.filter(user=request.user)
                 max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
                 Balance.objects.filter(id__in=max_ids).update(  
-                    account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] - request.data["withdraw_amount"],
+                    account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] - float(request.data["withdraw_amount"]),
                     history_balance_update=timezone.now()
                 )
                 return Response({'status': 'withdraw set'})
