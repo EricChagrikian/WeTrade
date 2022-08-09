@@ -33,10 +33,10 @@ class BalanceViewSet(viewsets.ViewSet):
                 withdraw_amount=0,
                 history=timezone.now()
                 )
-            if (serializer_instance.deposit_amount > 0):     
+            if (float(serializer_instance.deposit_amount) > 0):     
                 serializer_instance.save() 
 
-            if (serializer_instance.deposit_amount > 0):      
+            if (float(serializer_instance.deposit_amount) > 0):      
                 q = Balance.objects.filter(user=request.user)
                 max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
 
