@@ -19,7 +19,7 @@ colorama==0.4.3
 conda==4.3.16
 configobj==5.0.6
 constantly==15.1.0
-cryptography==2.8
+cryptography==37.0.4
 distro==1.4.0
 dj-database-url==1.0.0
 Django==4.0.5
@@ -51,7 +51,6 @@ more-itertools==4.2.0
 netifaces==0.10.4
 oauthlib==3.1.0
 p5py==1.0.0
-pep517==0.13.0
 pexpect==4.6.0
 pkgconfig==1.5.5
 prompt-toolkit==3.0.30
