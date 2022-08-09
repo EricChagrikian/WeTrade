@@ -37,14 +37,14 @@ urlpatterns = [
     path('api/balance/', views.BalanceViewSet.as_view({'get': 'check_balance'})), #view current balance
     path('api/balance/deposit/', views.BalanceViewSet.as_view({'post': 'deposit'})), #deposit money from balance
     path('api/balance/withdraw/', views.BalanceViewSet.as_view({'post': 'withdraw'})), #withdraw money from balance
-    path('api/trade/index',tradeViewSet.as_view({'get': 'list_trades'})), #list of all the trades of the authenticated user with details
-    path('api/trade/<int:pk>',tradeViewSet.as_view({'get': 'specific_trade'})), #details of one specific trade
+    path('api/trade/index/',tradeViewSet.as_view({'get': 'list_trades'})), #list of all the trades of the authenticated user with details
+    path('api/trade/<int:pk>/',tradeViewSet.as_view({'get': 'specific_trade'})), #details of one specific trade
     path('api/trade/openPNL/',tradeViewSet.as_view({'get': 'openPNL'})), #shows profit or loss of all open trades
     path('api/trade/closePNL/',tradeViewSet.as_view({'get': 'closedPNL'})), #shows profit or loss of all closed trades
-    path('api/trade/open',tradeViewSet.as_view({'get': 'list_opened_trades'})), #lists opened trades details of authenticated user
-    path('api/trade/close',tradeViewSet.as_view({'get': 'list_closed_trades'})), #lists closed trades details of authenticated user
-    path('api/trade/open',tradeViewSet.as_view({'post': 'open'})), #open a new trade
-    path('api/trade/close/<int:pk>',tradeViewSet.as_view({'post': 'close'})), #close an existing trade
+    path('api/trade/opened/',tradeViewSet.as_view({'get': 'list_opened_trades'})), #lists opened trades details of authenticated user
+    path('api/trade/closed/',tradeViewSet.as_view({'get': 'list_closed_trades'})), #lists closed trades details of authenticated user
+    path('api/trade/open/',tradeViewSet.as_view({'post': 'open'})), #open a new trade
+    path('api/trade/close/<int:pk>/',tradeViewSet.as_view({'post': 'close'})), #close an existing trade
 ]
 
 router = DefaultRouter()

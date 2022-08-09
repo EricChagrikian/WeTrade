@@ -34,12 +34,12 @@ class tradeViewSet(viewsets.ViewSet):
                 quantity = request.data['amount']
                 )
 
-            balance_before_open=Balance.objects.filter(user=request.user).aggregate(balance=Max('account_balance')).get('balance')
             q = Balance.objects.filter(user=request.user)
             max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
+            balance_before_open=Balance.objects.filter(id__in=max_ids).aggregate(balance=Max('account_balance')).get('balance')
             is_balance_enough = Balance.objects.filter(id__in=max_ids).aggregate(num=Max("account_balance")).get("num")
 
-            if (is_balance_enough >= total and serializer_trade > 0):
+            if (is_balance_enough >= total and serializer_trade.amount > 0):
                 Balance.objects.filter(id__in=max_ids).update(  
                     account_balance=balance_before_open - total
                 )                
@@ -61,29 +61,26 @@ class tradeViewSet(viewsets.ViewSet):
             return Response({'status': 'trade already closed'})
  
         price = getInfo(opened_trade.symbol)
-        opened_trade.close_price = price
-        opened_trade.close_datetime = timezone.now()
-        opened_trade.open = False
-        opened_trade.save()
 
-        open = Trade.objects.filter(user=request.user, id=pk).aggregate(open=Max('open')).get("open")
-        if not (open==1):
-            opened_trade.delete()
-            return Response({'status': 'trade already closed'})
+        Trade.objects.update(
+            open = False,
+            close_price = price,
+            close_datetime = timezone.now()
+            )
 
         open_price=Trade.objects.filter(user=request.user, id=pk).aggregate(num=Max("open_price")).get("num")
-        get_total = float(price - open_price)
+        closed_price=Trade.objects.filter(user=request.user, id=pk).aggregate(num=Max("close_price")).get("num")
+        get_total = float(closed_price - open_price)
         get_quantity = Trade.objects.filter(user=request.user, id=pk).aggregate(num=Max("quantity")).get("num")
         profit_or_loss = get_total*get_quantity
-        print(profit_or_loss)
-        amount_bought_on_open = Trade.objects.filter(user=request.user, id=pk).aggregate(num=Max("amount")).get("num")
+        amount_bought_on_open = Trade.objects.filter(user=request.user, id=pk).aggregate(num=Max("amount")).get("num")  
 
-        balance_before_close=Balance.objects.filter(user=request.user).aggregate(balance=Max('account_balance')).get("balance")
-        print(balance_before_close)
         q = Balance.objects.filter(user=request.user)
         max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
+        balance_before_close=Balance.objects.filter(id__in=max_ids).aggregate(balance=Max('account_balance')).get("balance")
+        print(balance_before_close)
         Balance.objects.filter(id__in=max_ids).update(  
-            account_balance= balance_before_close + profit_or_loss + amount_bought_on_open,
+            account_balance= float(balance_before_close) + profit_or_loss + float(amount_bought_on_open),
             history_balance_update=timezone.now()
         )
         return Response({'status': 'trade closed'})
@@ -92,68 +89,108 @@ class tradeViewSet(viewsets.ViewSet):
     @action(detail=True, methods=['get'])
     def list_trades(self, request):
         get_all_trades = Trade.objects.filter(user=request.user).values_list()
-        return Response(get_all_trades)
+        if len(get_all_trades) == 0:
+            return Response('Trades listing is empty')
+        else:
+            return Response(get_all_trades)
 
 
     @action(detail=True, methods=['get'])
     def list_opened_trades(self, request):
         get_all_open_trades = Trade.objects.filter(user=request.user, open=1).values_list()
-        return Response(get_all_open_trades)
+        if len(get_all_open_trades) == 0:
+            return Response('No opened trades')
+        else:
+            return Response(get_all_open_trades)
 
 
     @action(detail=True, methods=['get'])
     def list_closed_trades(self, request):
         get_all_closed_trades = Trade.objects.filter(user=request.user, open=0).values_list()
-        return Response(get_all_closed_trades)
+        if len(get_all_closed_trades) == 0:
+            return Response('No closed trades')
+        else:
+            return Response(get_all_closed_trades)
 
 
     @action(detail=True, methods=['get'])
     def specific_trade(self, request, pk):
-        get_all_trades = Trade.objects.filter(user=request.user, id=pk).values_list()
-        return Response(get_all_trades)
+        get_that_trade = Trade.objects.filter(user=request.user, id=pk).values_list()
+        if len(get_that_trade) == 0:
+            return Response('This trade does not exist')
+        else:
+            return Response(get_that_trade)
 
             
     @action(detail=True, methods=['get'])
     def openPNL(self, request):
 
-        all_open_prices_BTC=Trade.objects.filter(user=request.user, open=1, symbol="BTC").aggregate(num=Sum("open_price")).get("num")
-        all__open_quantities_BTC=Trade.objects.filter(user=request.user, open=1, symbol="BTC").aggregate(num=Sum("quantity")).get("num")
-        price_current_BTC = getInfo("BTC")
 
-        get_total_amount_when_bought_BTC = float(all__open_quantities_BTC * all_open_prices_BTC)
-        get_total_amount_now_BTC = float(all__open_quantities_BTC * price_current_BTC)
-        profit_or_loss_BTC=get_total_amount_now_BTC - get_total_amount_when_bought_BTC
+        is_user_trading=Trade.objects.filter(user=request.user, open=1).values_list()
+        if len(is_user_trading) == 0:
+            return Response({"No trades to calculate OpenPNL from"})
+        
+        else:
+            is_user_trading_BTC=Trade.objects.filter(user=request.user, open=1, symbol="BTC").values_list()         
+            if not len(is_user_trading_BTC) == 0:
+                all_open_prices_BTC=Trade.objects.filter(user=request.user, open=1, symbol="BTC").aggregate(num=Sum("open_price")).get("num")
+                all__open_quantities_BTC=Trade.objects.filter(user=request.user, open=1, symbol="BTC").aggregate(num=Sum("quantity")).get("num")
+                price_current_BTC = getInfo("BTC")
 
-        all_open_prices_ETH=Trade.objects.filter(user=request.user, open=1, symbol="ETH").aggregate(num=Sum("open_price")).get("num")
-        all__open_quantities_ETH=Trade.objects.filter(user=request.user, open=1, symbol="ETH").aggregate(num=Sum("quantity")).get("num")
-        price_current_ETH = getInfo("ETH")
+                get_total_amount_when_bought_BTC = float(all__open_quantities_BTC * all_open_prices_BTC)
+                get_total_amount_now_BTC = float(all__open_quantities_BTC * price_current_BTC)
+                profit_or_loss_BTC=get_total_amount_now_BTC - get_total_amount_when_bought_BTC
+            else:
+                profit_or_loss_BTC=float(0)
 
-        get_total_amount_when_bought_ETH = float(all__open_quantities_ETH * all_open_prices_ETH)
-        get_total_amount_now_ETH = float(all__open_quantities_ETH * price_current_ETH)
-        profit_or_loss_ETH=get_total_amount_now_ETH - get_total_amount_when_bought_ETH
+            is_user_trading_ETH=Trade.objects.filter(user=request.user, open=1, symbol="ETH").values_list()         
+            if not len(is_user_trading_ETH) == 0:
+                all_open_prices_ETH=Trade.objects.filter(user=request.user, open=1, symbol="ETH").aggregate(num=Sum("open_price")).get("num")
+                all__open_quantities_ETH=Trade.objects.filter(user=request.user, open=1, symbol="ETH").aggregate(num=Sum("quantity")).get("num")
+                price_current_ETH = getInfo("ETH")
 
-        total_profit_or_loss=profit_or_loss_BTC + profit_or_loss_ETH
-        return Response({total_profit_or_loss})
+                get_total_amount_when_bought_ETH = float(all__open_quantities_ETH * all_open_prices_ETH)
+                get_total_amount_now_ETH = float(all__open_quantities_ETH * price_current_ETH)
+                profit_or_loss_ETH=get_total_amount_now_ETH - get_total_amount_when_bought_ETH
+            else:
+                profit_or_loss_ETH=float(0)
+
+            total_profit_or_loss=profit_or_loss_BTC + profit_or_loss_ETH
+            return Response({total_profit_or_loss})
 
 
     @action(detail=True, methods=['get'])
     def closedPNL(self, request):
-        all_closed_prices_BTC=Trade.objects.filter(user=request.user, open=0, symbol="BTC").aggregate(num=Sum("close_price")).get("num")
-        all__closed_quantities_BTC=Trade.objects.filter(user=request.user, open=0, symbol="BTC").aggregate(num=Sum("quantity")).get("num")
-        price_current_BTC = getInfo("BTC")
 
-        get_total_amount_when_bought_BTC = float(all__closed_quantities_BTC * all_closed_prices_BTC)
-        get_total_amount_now_BTC = float(all__closed_quantities_BTC * price_current_BTC)
-        profit_or_loss_BTC=get_total_amount_now_BTC - get_total_amount_when_bought_BTC
+        is_user_trading=Trade.objects.filter(user=request.user, open=0).values_list()
+        if len(is_user_trading) == 0:
+            return Response({"No trades to calculate ClosePNL from"})
+        else:
+            is_user_trading_BTC=Trade.objects.filter(user=request.user, open=0, symbol="BTC").values_list() 
 
-        all_closed_prices_ETH=Trade.objects.filter(user=request.user, open=0, symbol="ETH").aggregate(num=Sum("close_price")).get("num")
-        all__closed_quantities_ETH=Trade.objects.filter(user=request.user, open=0, symbol="ETH").aggregate(num=Sum("quantity")).get("num")
-        price_current_ETH = getInfo("ETH")
+            if not len(is_user_trading_BTC) == 0:            
+                all_closed_prices_BTC=Trade.objects.filter(user=request.user, open=0, symbol="BTC").aggregate(num=Sum("close_price")).get("num")
+                all__closed_quantities_BTC=Trade.objects.filter(user=request.user, open=0, symbol="BTC").aggregate(num=Sum("quantity")).get("num")
+                price_current_BTC = getInfo("BTC")
 
-        get_total_amount_when_bought_ETH = float(all__closed_quantities_ETH * all_closed_prices_ETH)
-        get_total_amount_now_ETH = float(all__closed_quantities_ETH * price_current_ETH)
-        profit_or_loss_ETH=get_total_amount_now_ETH - get_total_amount_when_bought_ETH
+                get_total_amount_when_bought_BTC = float(all__closed_quantities_BTC * all_closed_prices_BTC)
+                get_total_amount_now_BTC = float(all__closed_quantities_BTC * price_current_BTC)
+                profit_or_loss_BTC=get_total_amount_now_BTC - get_total_amount_when_bought_BTC
+            else:
+                profit_or_loss_BTC=float(0)
 
+            is_user_trading_ETH=Trade.objects.filter(user=request.user, open=0, symbol="ETH").values_list()  
+            if not len(is_user_trading_ETH) == 0:               
+                all_closed_prices_ETH=Trade.objects.filter(user=request.user, open=0, symbol="ETH").aggregate(num=Sum("close_price")).get("num")
+                all__closed_quantities_ETH=Trade.objects.filter(user=request.user, open=0, symbol="ETH").aggregate(num=Sum("quantity")).get("num")
+                price_current_ETH = getInfo("ETH")
+
+                get_total_amount_when_bought_ETH = float(all__closed_quantities_ETH * all_closed_prices_ETH)
+                get_total_amount_now_ETH = float(all__closed_quantities_ETH * price_current_ETH)
+                profit_or_loss_ETH=get_total_amount_now_ETH - get_total_amount_when_bought_ETH
+            else:
+                profit_or_loss_ETH=float(0)
+                
         total_profit_or_loss=profit_or_loss_BTC + profit_or_loss_ETH
         return Response({total_profit_or_loss})
 

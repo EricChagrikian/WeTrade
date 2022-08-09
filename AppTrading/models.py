@@ -20,7 +20,7 @@ class Trade(models.Model):
     )
     open_price = models.FloatField(
         null=True, blank=True
-    )###
+    )
     close_price = models.FloatField(
         blank=True, null=True
     )
