@@ -39,7 +39,7 @@ class BalanceViewSet(viewsets.ViewSet):
                 q = Balance.objects.filter(user=request.user)
                 max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max')
                 Balance.objects.filter(id__in=max_ids).update(  
-                    account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] + request.data["deposit_amount"]
+                    account_balance=all_deposit_amount['deposit'] - all_withdraw_amount['withdraw'] + float(request.data["deposit_amount"])
                 )
                 return Response({'status': 'deposit set'}) 
             else:
