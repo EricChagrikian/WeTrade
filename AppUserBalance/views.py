@@ -72,7 +72,7 @@ class BalanceViewSet(viewsets.ViewSet):
                 history=timezone.now()       
                 )
 
-            if (serializer_instance.withdraw_amount > 0):
+            if (float(serializer_instance.withdraw_amount) > 0):
                 serializer_instance.save()
             
                 q = Balance.objects.filter(user=request.user)
