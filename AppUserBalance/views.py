@@ -90,6 +90,9 @@ class BalanceViewSet(viewsets.ViewSet):
             max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max') 
 
             balance_before_withdraw=Balance.objects.filter(id__in=max_ids).aggregate(balance=Max('account_balance')).get("balance")
+            print(float(serializer_instance.withdraw_amount))
+            print(float(serializer_instance.withdraw_amount))
+            print(float(balance_before_withdraw))
             
             if (float(serializer_instance.withdraw_amount) > 0 and float(serializer_instance.withdraw_amount) < float(balance_before_withdraw)):
                 serializer_instance.save()
