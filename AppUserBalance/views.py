@@ -46,7 +46,7 @@ class BalanceViewSet(viewsets.ViewSet):
                     get_all_deposits=0
 
                 Balance.objects.filter(id__in=max_ids).update(  
-                    account_balance=get_all_deposits - get_all_withdraw + request.data["deposit_amount"]
+                    account_balance=float(get_all_deposits) - float(get_all_withdraw) + float(request.data["deposit_amount"])
                 )
                 
                 return Response({'status': 'deposit set'}) 
@@ -88,7 +88,7 @@ class BalanceViewSet(viewsets.ViewSet):
 
             balance_before_withdraw=Balance.objects.filter(id__in=max_ids).aggregate(balance=Max('account_balance')).get("balance")
             
-            if (float(serializer_instance.withdraw_amount) > 0 and float(serializer_instance.withdraw_amount) < balance_before_withdraw):
+            if (float(serializer_instance.withdraw_amount) > 0 and float(serializer_instance.withdraw_amount) < float(balance_before_withdraw)):
                 serializer_instance.save()
             
                 Balance.objects.filter(id__in=max_ids).update(  
