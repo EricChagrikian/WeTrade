@@ -89,8 +89,8 @@ class BalanceViewSet(viewsets.ViewSet):
             q = Balance.objects.filter(user=request.user)
             max_ids = q.values('user_id').annotate(Max('id')).values_list('id__max') 
 
-            balance_before_withdraw=Balance.objects.filter(id__in=max_ids).aggregate(balance=Max('account_balance')).get("balance")
-            print(float(serializer_instance.withdraw_amount))
+            balance_before_withdraw=float(all_deposit_amount['deposit']) - float(all_withdraw_amount['withdraw'])
+
             print(float(serializer_instance.withdraw_amount))
             print(float(balance_before_withdraw))
             
