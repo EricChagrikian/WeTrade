@@ -45,6 +45,9 @@ class BalanceViewSet(viewsets.ViewSet):
                 if get_all_deposits==None:
                     get_all_deposits=0
 
+                if get_all_withdraw==None:
+                    get_all_withdraw=0
+
                 Balance.objects.filter(id__in=max_ids).update(  
                     account_balance=float(get_all_deposits) - float(get_all_withdraw) + float(request.data["deposit_amount"])
                 )
